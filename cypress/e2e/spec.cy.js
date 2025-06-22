@@ -68,4 +68,61 @@ describe('TODOMvc App', () => {
       .children()
       .should('have.length', 2);
   });
+
+  it('Marca e desmarca uma tarefa como concluída', () => {
+  cy.visit('');
+
+  cy.get('[data-cy=todo-input]')
+    .type('Revisar pull request{enter}');
+
+  cy.get('[data-cy=toggle-todo-checkbox]')
+    .check()
+    .should('be.checked');
+
+  cy.get('[data-cy=toggle-todo-checkbox]')
+    .uncheck()
+    .should('not.be.checked');
+  });
+
+  it('Edita o texto de uma tarefa existente', () => {
+  cy.visit('');
+
+  cy.get('.new-todo')
+    .type('Estudar JavaScript{enter}');
+
+  cy.get('.todo-list li')
+    .first()
+    .find('label')
+    .dblclick();
+
+  cy.get('.todo-list li.editing .edit')
+    .clear()
+    .type('Estudar Cypress E2E{enter}');
+
+  cy.get('.todo-list li')
+    .first()
+    .should('contain.text', 'Estudar Cypress E2E');
+  });
+
+  it('Limpa todas as tarefas concluídas', () => {
+  cy.visit('');
+
+  cy.get('.new-todo')
+    .type('Estudar para prova{enter}')
+    .type('Enviar relatório{enter}');
+
+  // Marca as duas tarefas como concluídas
+  cy.get('.todo-list li')
+    .each($el => {
+      cy.wrap($el).find('.toggle').check();
+    });
+
+  // Clica no botão "Clear completed"
+  cy.get('.clear-completed')
+    .click();
+
+  // Verifica que a lista está vazia
+  cy.get('.todo-list li')
+    .should('have.length', 0);
+  });
 });
